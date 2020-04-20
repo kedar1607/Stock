@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Stock.iml" filepath="$PROJECT_DIR$/Stock.iml" group="Stock" />
+      <module fileurl="file://$PROJECT_DIR$/realtimestocks/realtimestocks.iml" filepath="$PROJECT_DIR$/realtimestocks/realtimestocks.iml" group="Stock/realtimestocks" />
+      <module fileurl="file://$PROJECT_DIR$/realtimeusstocks/realtimeusstocks.iml" filepath="$PROJECT_DIR$/realtimeusstocks/realtimeusstocks.iml" />
+      <module fileurl="file://$PROJECT_DIR$/testapp/testapp.iml" filepath="$PROJECT_DIR$/testapp/testapp.iml" group="Stock/testapp" />
+    </modules>
+  </component>
+</project>
