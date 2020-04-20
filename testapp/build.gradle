@@ -14,6 +14,10 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        resValue "string", "STREAM_IO_APP_TOKEN", "MGM4OTI2ZmYtNWYzOS00MGU5LTg5MzMtYjE4N2UwZDVjZWNl"
+        resValue "string", "POLYGON_IO_API_KEY", "MaRxgV_zEL_k4dWboARkazhMT_uIMfW7tU4L6i"
+        resValue "string", "APLHA_ADVANTAGE_API_KEY", "JKI0YSQE2ORV3KCL"
+
     }
 
     buildTypes {

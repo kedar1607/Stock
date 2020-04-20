@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">testApp</string>
+    <string name="app_name">PriceAlert</string>
+    <string name="stock_price_alert">Stock price alert</string>
+    <string name="foreground_notification">PriceAlert foreground notification channel</string>
+    <string name="foreground_notification_desc">This is where you get up to date stock info.</string>
+    <string name="notification_update">Price of %1$s is $%2$s</string>
 </resources>

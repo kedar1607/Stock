@@ -1,26 +1,22 @@
 package kedar.com.realtimestocks.streamdataio;
 
-import android.app.ActivityManager;
-import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchException;
-import com.google.gson.JsonObject;
-
 import java.io.IOException;
-import java.util.logging.LogRecord;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 import kedar.com.eventsource.EventSourceHandler;
 import kedar.com.eventsource.MessageEvent;
+import kedar.com.realtimestocks.models.Last;
+import kedar.com.realtimestocks.models.StockInfo;
 
 import static android.content.ContentValues.TAG;
 
@@ -31,13 +27,10 @@ public class SSEHandlerStock implements EventSourceHandler {
 
     private MutableLiveData<String> liveJson = new MutableLiveData<>();
 
-    private PriceObservable priceObservable;
+    private List<PriceObservable> priceObservables = new ArrayList<>();
 
-    private String price = "";
 
     public SSEHandlerStock() { }
-
-
 
     /**
 
@@ -48,14 +41,10 @@ public class SSEHandlerStock implements EventSourceHandler {
     @Override
 
     public void onConnect() {
-
         if (Log.isLoggable(TAG, Log.DEBUG)) {
-
             Log.d(TAG, "SSE Connected");
-
         }
         /* Do whatever you like in when the stream gets open */
-
     }
 
 
@@ -63,15 +52,12 @@ public class SSEHandlerStock implements EventSourceHandler {
     /* SSE incoming message handler */
 
     @Override
-
     public void onMessage(String event, MessageEvent message) throws IOException {
 
         if ("data".equals(event)) {
             // SSE message is the first snapshot
             ObjectMapper mapper = new ObjectMapper();
-
             data = mapper.readTree(message.data) ;
-
             Handler mainHandler = new Handler(Looper.getMainLooper());
 
             //This is used for alpha advantage
@@ -83,13 +69,18 @@ public class SSEHandlerStock implements EventSourceHandler {
 //                    priceObservable.newPrice(price);
 //                }
 //            };
-
             Runnable myRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    String price = data.get("last").get("price").toString();
+                    final String price = data.get("last").get("price").toString();
+                    final String symbol = data.get("symbol").textValue();
                     liveJson.setValue(price);
-                    priceObservable.newPrice(price);
+                    priceObservables.forEach(new Consumer<PriceObservable>() {
+                        @Override
+                        public void accept(PriceObservable it) {
+                            it.newPrice(new StockInfo(new Last(null,null,Double.parseDouble(price),null,null), null,symbol));
+                        }
+                    });
                 }
             };
             mainHandler.post(myRunnable);
@@ -102,23 +93,28 @@ public class SSEHandlerStock implements EventSourceHandler {
         } else if ("patch".equals(event)) {
 
             // SSE message is a patch
-
             try {
 
                 ObjectMapper mapper = new ObjectMapper();
 
-                data = mapper.readTree(message.data);
+                JsonNode tempNode  = mapper.readTree(message.data);
 
                 Handler mainHandler = new Handler(Looper.getMainLooper());
 
-                for (final JsonNode op:data) {
+                for (final JsonNode op:tempNode) {
                     if(op.get("op").textValue().equals("replace") && op.get("path").textValue().equals("/last/price") ){
                         Runnable myRunnable = new Runnable() {
                             @Override
                             public void run() {
-                                String price = op.get("value").toString();
+                                final String price = op.get("value").toString();
+                                final String symbol = data.get("symbol").textValue();
                                 liveJson.setValue(price);
-                                priceObservable.newPrice(price);
+                                priceObservables.forEach(new Consumer<PriceObservable>() {
+                                    @Override
+                                    public void accept(PriceObservable it) {
+                                        it.newPrice(new StockInfo(new Last(null,null,Double.parseDouble(price),null,null), null,symbol));
+                                    }
+                                });
                             }
                         };
                         mainHandler.post(myRunnable);
@@ -164,27 +160,21 @@ public class SSEHandlerStock implements EventSourceHandler {
     /* SSE error Handler */
 
     @Override
-
     public void onError(Throwable t) {
-
         /* Do whatever you like in case of error */
-
     }
-
-
-
     /* SSE Handler for connection interruption */
-
     @Override
-
     public void onClosed(boolean willReconnect) {
-
         /* Do whatever you like when the stream gets stopped */
-
     }
 
-    public void setPriceObservable(PriceObservable priceObservable) {
-        this.priceObservable = priceObservable;
+    public void addPriceObservable(PriceObservable priceObservable) {
+        this.priceObservables.add(priceObservable);
+    }
+
+    public void removePriceObservable(PriceObservable priceObservable){
+        this.priceObservables.remove(priceObservable);
     }
 
 }
