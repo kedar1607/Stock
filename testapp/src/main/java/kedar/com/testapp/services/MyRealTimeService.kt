@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
+import kedar.com.realtimestocks.models.StockInfo
 import kedar.com.realtimestocks.streamdataio.RealTimeDataConnection
 import kedar.com.testapp.R
 import kedar.com.realtimestocks.streamdataio.PriceObservable
@@ -44,10 +45,10 @@ class MyRealTimeService : Service() {
     fun testRealTimeGlobalQuote(alertSetUp: AlertSetUp, isCrypto:Boolean = false){
         lateinit var realTimeDataConnection: RealTimeDataConnection
         val priceObservable = object : PriceObservable {
-            override fun newPrice(price: String) {
-                val priceBigDecimal = price.toBigDecimalOrNull()
-                if(priceBigDecimal != null && priceBigDecimal > alertSetUp.tippingPoint) {
-                    createNotification("new price of ${alertSetUp.symbol} is $price", alertSetUp)
+            override fun newPrice(stockInfo: StockInfo) {
+                val priceBigDecimal = stockInfo.last.price.toBigDecimal()
+                if(priceBigDecimal > alertSetUp.tippingPoint) {
+                    createNotification(getString(R.string.notification_update, stockInfo.symbol, priceBigDecimal.toString()), alertSetUp)
                 }
             }
 
@@ -56,10 +57,10 @@ class MyRealTimeService : Service() {
             realTimeDataConnection = RealTimeDataConnection()
             if(!isCrypto){
 //                realTimeDataConnection.startRealTimeStockPriceListening(alertSetUp.symbol, "MGM4OTI2ZmYtNWYzOS00MGU5LTg5MzMtYjE4N2UwZDVjZWNl", "JKI0YSQE2ORV3KCL")
-                realTimeDataConnection.startRealTimeStockPriceListening(alertSetUp.symbol, "MGM4OTI2ZmYtNWYzOS00MGU5LTg5MzMtYjE4N2UwZDVjZWNl", "MaRxgV_zEL_k4dWboARkazhMT_uIMfW7tU4L6i")
+                realTimeDataConnection.startRealTimeStockPriceListening(alertSetUp.symbol, getString(R.string.STREAM_IO_APP_TOKEN), getString(R.string.POLYGON_IO_API_KEY))
 
             }else{
-                realTimeDataConnection.startRealTimeCryptoPriceInUSDListening(alertSetUp.symbol, "MGM4OTI2ZmYtNWYzOS00MGU5LTg5MzMtYjE4N2UwZDVjZWNl", "JKI0YSQE2ORV3KCL")
+                realTimeDataConnection.startRealTimeCryptoPriceInUSDListening(alertSetUp.symbol, getString(R.string.STREAM_IO_APP_TOKEN), getString(R.string.APLHA_ADVANTAGE_API_KEY))
             }
             realTimeDataConnection.connect(priceObservable)
             connectionMap[alertSetUp] = realTimeDataConnection
@@ -70,7 +71,7 @@ class MyRealTimeService : Service() {
         createNotificationChannel(alertSetUp.symbol)
         val builder = NotificationCompat.Builder(this, alertSetUp.symbol)
                 .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle("Stock price alert")
+                .setContentTitle(getString(R.string.stock_price_alert))
                 .setContentText(text)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
@@ -84,8 +85,8 @@ class MyRealTimeService : Service() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Stock notification channel"
-            val descriptionText = "This is where you get up to date stock info."
+            val name = getString(R.string.foreground_notification)
+            val descriptionText = getString(R.string.foreground_notification_desc)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(id, name, importance).apply {
                 description = descriptionText

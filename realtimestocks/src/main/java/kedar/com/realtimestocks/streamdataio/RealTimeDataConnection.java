@@ -13,7 +13,6 @@ import kedar.com.eventsource.EventSource;
 
 import static android.content.ContentValues.TAG;
 import static kedar.com.realtimestocks.contants.API.CURRENCY_EXCHANGE_RATE;
-import static kedar.com.realtimestocks.contants.API.REALTIME_GLOBAL_QUOTE;
 import static kedar.com.realtimestocks.contants.API.STREAMDATAIO_XSD_TOKEN_KEY;
 import static kedar.com.realtimestocks.contants.API.STREAMDATA_IO_PROXY_PREFIX;
 
@@ -85,7 +84,7 @@ public class RealTimeDataConnection {
                 sseHandlerCrypto.setPriceObservable(priceObservable);
             }else{
                 sseHandler = new SSEHandlerStock();
-                sseHandler.setPriceObservable(priceObservable);
+                sseHandler.addPriceObservable(priceObservable);
             }
             eventSource = new EventSource(new URI(STREAMDATA_IO_PROXY_PREFIX), new URI(apiURL),isCrypto? sseHandlerCrypto: sseHandler , headers);
 
@@ -93,13 +92,7 @@ public class RealTimeDataConnection {
 
             e.printStackTrace();
         }
-
-
-
         // Start data receiving
-
-
-
         eventSource.connect();
 
     }

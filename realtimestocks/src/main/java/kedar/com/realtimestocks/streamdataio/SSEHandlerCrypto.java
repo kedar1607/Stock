@@ -78,7 +78,8 @@ public class SSEHandlerCrypto implements EventSourceHandler {
                 public void run() {
                     String price = data.get("RealtimeCurrency Exchange Rate").get("5. Exchange Rate").textValue();
                     liveJson.setValue(price);
-                    priceObservable.newPrice(price);
+                    //TODO PLease update as per crypto API docs
+//                    priceObservable.newPrice(price);
                 }
             };
             mainHandler.post(myRunnable);
@@ -111,7 +112,8 @@ public class SSEHandlerCrypto implements EventSourceHandler {
                     public void run() {
                         String price = data.get(0).get("value").textValue();
                         liveJson.setValue(price);
-                        priceObservable.newPrice(price);
+                        //TODO PLease update as per crypto API docs
+//                        priceObservable.newPrice(price);
                     }
                 };
                 mainHandler.post(myRunnable);
