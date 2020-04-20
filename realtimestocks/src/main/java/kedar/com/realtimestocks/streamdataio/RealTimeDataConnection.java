@@ -1,7 +1,8 @@
 package kedar.com.realtimestocks.streamdataio;
 
-import android.arch.lifecycle.LiveData;
 import android.util.Log;
+
+import androidx.lifecycle.LiveData;
 
 import java.net.URI;
 import java.net.URISyntaxException;

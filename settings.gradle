@@ -1,1 +1,1 @@
-include ':testapp', ':realtimestocks'
+include ':pricealertapp', ':realtimestocks'
