@@ -1,34 +1,38 @@
-package kedar.com.pricealertapp
+package kedar.com.pricealertapp.fragments
 
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import kedar.AlertApplication
+import kedar.com.pricealertapp.R
 import kedar.com.pricealertapp.models.AlertSetUp
 import kedar.com.pricealertapp.models.Magnitude
 import kotlinx.android.synthetic.main.fragment_tracking.*
 
-class TrackDetailsActivity : AppCompatActivity() {
-
+class TrackingFragment: Fragment() {
 
     private var isPriceEntered = false
 
     private var isSymbolEntered = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_tracking)
-//        button = findViewById(R.id.btn_start)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_tracking, container, false)
+    }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         readStockSymbol()
         readHitPrice()
-//        button.setOnClickListener { startListening() }
         btn_test.setOnClickListener { trackStock() }
         btn_disable.setOnClickListener {
             AlertApplication.instance.mService.disableAllAlerts()
         }
     }
+
 
     private fun readStockSymbol() {
         et_symbol.addTextChangedListener(object : TextWatcher {
@@ -78,13 +82,5 @@ class TrackDetailsActivity : AppCompatActivity() {
         btn_test.isEnabled = false
     }
 
-    private fun testMyServiceAfterKill(){
-//        AlertApplication.instance.mService.testMyservice()
-    }
 
-    private fun startListening(){
-        AlertApplication.instance.mService.createNewAlerts(mutableListOf(AlertSetUp("AAPL", 230.toBigDecimal(), Magnitude.POSITIVE, 1)
-                , AlertSetUp("MSFT", 160.toBigDecimal(), Magnitude.POSITIVE, 2),
-                AlertSetUp("BA", 130.toBigDecimal(), Magnitude.POSITIVE, 3)))
-    }
 }

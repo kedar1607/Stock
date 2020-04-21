@@ -10,8 +10,8 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LiveData
-import kedar.com.pricealertapp.TrackDetailsActivity
 import kedar.com.pricealertapp.R
+import kedar.com.pricealertapp.activities.MainActivity
 import kedar.com.pricealertapp.services.ConnectionEstablisher
 import kedar.com.pricealertapp.services.MyRealTimeService
 
@@ -118,7 +118,7 @@ class AlertApplication: Application() {
 
     private fun runAsForeground() {
         createNotificationChannelForForegroundService()
-        val notificationIntent = Intent(this, TrackDetailsActivity::class.java)
+        val notificationIntent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
         val notification: Notification = NotificationCompat.Builder(this).setChannelId("foreground_service_channel")
