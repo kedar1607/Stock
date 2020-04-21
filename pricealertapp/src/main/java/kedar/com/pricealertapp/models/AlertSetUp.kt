@@ -2,10 +2,10 @@ package kedar.com.pricealertapp.models
 
 import java.math.BigDecimal
 
-data class AlertSetUp(val symbol: String, val tippingPoint: BigDecimal, val magnitude: Magnitude, val notificationId: Int){
+data class AlertSetUp(val symbol: String, val tippingPoint: BigDecimal, val magnitude: Magnitude, val notificationId: Int, var livePrice: BigDecimal? = null){
     override fun equals(other: Any?): Boolean {
         val otherSetUp = other as AlertSetUp
-        return this.symbol == otherSetUp.symbol && magnitude == otherSetUp.magnitude
+        return this.symbol == otherSetUp.symbol && magnitude == otherSetUp.magnitude && tippingPoint == otherSetUp.tippingPoint
     }
 
     override fun hashCode(): Int {

@@ -6,5 +6,7 @@
     <string name="notification_update">Price of %1$s is $%2$s</string>
     <string name="dashboard">Dashboard</string>
     <string name="track">Track</string>
+    <string name="loading">Loading...</string>
+    <string name="enable_caps">ENABLE</string>
 
 </resources>

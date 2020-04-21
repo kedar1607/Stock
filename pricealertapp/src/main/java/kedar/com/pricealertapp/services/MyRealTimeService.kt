@@ -15,6 +15,7 @@ import kedar.com.realtimestocks.streamdataio.RealTimeDataConnection
 import kedar.com.pricealertapp.R
 import kedar.com.realtimestocks.streamdataio.PriceObservable
 import kedar.com.pricealertapp.models.AlertSetUp
+import kedar.com.pricealertapp.models.LiveUpdateStock
 import java.util.concurrent.Executors
 
 class MyRealTimeService : Service() {
@@ -23,6 +24,7 @@ class MyRealTimeService : Service() {
     lateinit var connectionEstablisher: ConnectionEstablisher
     val es = Executors.newFixedThreadPool(5)
     private val connectionMap = mutableMapOf<AlertSetUp, RealTimeDataConnection>()
+    private val myListObservers = mutableSetOf<MyListObserver>()
 
 
     /**
@@ -46,6 +48,14 @@ class MyRealTimeService : Service() {
         val priceObservable = object : PriceObservable {
             override fun newPrice(stockInfo: StockInfo) {
                 val priceBigDecimal = stockInfo.last.price.toBigDecimal()
+                if(myListObservers.size > 0){
+                    myListObservers.forEach {
+                        connectionMap.keys.first { alert ->
+                            alert.symbol == alertSetUp.symbol
+                        }.livePrice = priceBigDecimal
+                        it.pushUpdate(connectionMap.keys.toList())
+                    }
+                }
                 if(priceBigDecimal > alertSetUp.tippingPoint) {
                     createNotification(getString(R.string.notification_update, stockInfo.symbol, priceBigDecimal.toString()), alertSetUp)
                 }
@@ -117,6 +127,22 @@ class MyRealTimeService : Service() {
     fun testMyservice() {
         val str = connectionMap.toString()
         print(str)
+    }
+
+    fun getActiveStocks(): List<AlertSetUp> = connectionMap.keys.toList()
+
+    fun addListObserver(myListObserver: MyListObserver){
+        myListObservers.add(myListObserver)
+    }
+
+    fun removeListObserver(myListObserver: MyListObserver){
+        myListObservers.remove(myListObserver)
+    }
+
+    fun activateAlert(liveUpdateStock: LiveUpdateStock){
+//        connectionMap[connectionMap.keys.first { it.symbol == liveUpdateStock.symbol
+//                && it.magnitude == liveUpdateStock.magnitude
+//                && it.tippingPoint == liveUpdateStock.alertPrice }]?.connect()
     }
 
     fun getNextNotificationId() = connectionMap.size

@@ -70,6 +70,7 @@ public class RealTimeDataConnection {
 
         // Create headers: Add the streamdata.io app token
 
+
         Map<String, String> headers = new HashMap<>();
 
         headers.put(STREAMDATAIO_XSD_TOKEN_KEY, streamdataioAppToken);
